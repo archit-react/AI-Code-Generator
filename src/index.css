@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🔥 Kill all scroll flickers, padding leaks and white edges */
 * {
     box-sizing: border-box;
   }

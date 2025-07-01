@@ -2,7 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 const resources = {
-  en: {
+  en: {  // english
     translation: {
       title: "AI Code Generator",
       placeholder: "Describe what you want to build...",
@@ -12,7 +12,7 @@ const resources = {
       generating: "Generating...",
     },
   },
-  es: {
+  es: { // spanish
     translation: {
       title: "Generador de Código IA",
       placeholder: "Describe lo que quieres construir...",
