@@ -26,5 +26,15 @@ export const generateCode = async (language: string, prompt: string) => {
     }
   );
 
-  return response.data.candidates[0].content.parts[0].text;
+  const candidates = response?.data?.candidates;
+
+  if (
+    candidates &&
+    candidates.length > 0 &&
+    candidates[0].content?.parts?.length > 0
+  ) {
+    return candidates[0].content.parts[0].text || "";
+  }
+
+  return ""; 
 };
