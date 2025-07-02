@@ -54,9 +54,7 @@ npm run dev
 
 ---
 
-## 🧠 Key Learnings & Fixes
-
-### ✅ What We Did Differently:
+### ✅ Things Done Differently:
 
 - Used **Google Gemini API** via **OpenRouter** instead of OpenAI (to avoid API costs).
 - Implemented **Typewriter effect** with a custom React hook (`useTypewriter`).
@@ -91,6 +89,20 @@ npm run dev
 
 ---
 
+## ✅ Unit Testing
+
+This project includes unit tests written using **Vitest** and **React Testing Library**.
+
+### 🔍 Tested Features
+
+- 🌗 Dark mode toggle
+- 🌐 Language dropdown (i18n)
+- 📋 Copy to clipboard functionality
+- 🧪 Mocked `generateCode()` API
+- 💡 Custom hooks and rendering logic
+
+---
+
 ## 📂 Folder Structure
 
 ```
@@ -102,6 +114,7 @@ npm run dev
   App.tsx
   main.tsx
   index.css
+  App.test.tsx
 ```
 
 ---
