@@ -91,7 +91,7 @@ npm run dev
 
 ## ✅ Unit Testing
 
-This project includes unit tests written using **Vitest** and **React Testing Library**.
+This project includes unit tests written using **Vitest** (https://vitest.dev/) and **React Testing Library** (https://testing-library.com/) for testing.
 
 ### 🔍 Tested Features
 
@@ -124,4 +124,4 @@ This project includes unit tests written using **Vitest** and **React Testing Li
 **Archit Sharma**  
 Frontend Developer · React · JavaScript · TypeScript
 
-[GitHub](https://github.com/archit-react) • [LinkedIn](https://linkedin.com/in/your-profile) • [Portfolio](https://your-portfolio.com)
+[GitHub](https://github.com/archit-react) • [LinkedIn](www.linkedin.com/in/archit-react) • [Portfolio](https://your-portfolio.com)
