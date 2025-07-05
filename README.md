@@ -1,4 +1,4 @@
-# AI Code Generator
+# AI Code Generator (Unit Tested)
 
 A responsive, multilingual AI-powered code generation app built with **React**, **TypeScript**, and **Vite**. Users can describe what they want to build, select a language, and generate working code using an AI API (Google Gemini via OpenRouter). It features **dark/light mode**, **typewriter animation**, **language selector**, and **syntax highlighting** with a clean, developer-friendly UI.
 
