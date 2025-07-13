@@ -62,12 +62,18 @@ npm run dev
 - Integrated **react-i18next** for internationalization (English, Spanish).
 - Applied **Prism OneDark** theme using `react-syntax-highlighter` for clean code blocks.
 - Used Tailwind CSS throughout instead of custom CSS.
+- **(NEW)** Fixed typewriter bug where the **first letter (like 'T' in "There’s")** was getting skipped by adding a **zero-width space** before the output.
+
+---
 
 ### 🛠️ Mistakes Faced:
 
 - ❌ Dark mode was applied but **top white border** stayed in `<body>` due to incorrect root background.
 - ❌ `className="dark"` wasn’t taking full effect because `html, body` background wasn’t set globally.
 - ❌ Used `className="bg-white"` directly without inheritance, overriding global dark styles.
+- ❌ **(NEW)** Typewriter bug: **First letter was being skipped** in animated output ("There’s" showing as "Here’s").
+
+---
 
 ### 🧪 Fixes:
 
@@ -75,6 +81,7 @@ npm run dev
 - ✅ Applied `background-color: inherit` on `#root` and `body` to fix **white flash bug**.
 - ✅ Used Tailwind’s `dark:bg-...` + `bg-inherit` correctly to control layout-level backgrounds.
 - ✅ Set `color-scheme: dark` for full system dark mode support.
+- ✅ **(NEW)** Prepended **zero-width space (`\u200B`)** to `output` for typewriter animation to prevent the **first letter bug** from eating initial characters like `T`.
 
 ---
 
@@ -124,4 +131,4 @@ This project includes unit tests written using **Vitest** (https://vitest.dev/) 
 **Archit Sharma**  
 Frontend Developer · React · JavaScript · TypeScript
 
-[GitHub](https://github.com/archit-react) • [LinkedIn](www.linkedin.com/in/archit-react) • [Portfolio](https://your-portfolio.com)
+[GitHub](https://github.com/archit-react) • [LinkedIn](https://www.linkedin.com/in/archit-react) • [Portfolio](https://your-portfolio.com)
