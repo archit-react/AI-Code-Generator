@@ -26,7 +26,6 @@ export default function App() {
       window.matchMedia("(prefers-color-scheme: dark)").matches
   );
 
-  // Fix: Always prepend zero-width space to output
   const typedOutput = useTypewriter(
     output ? (output.startsWith("\u200B") ? output : `\u200B${output}`) : ""
   );
@@ -55,7 +54,6 @@ export default function App() {
     try {
       const result = await generateCode(language, prompt);
       if (typeof result === "string" && result.trim() !== "") {
-        // Prepend zero-width space to protect first character
         setOutput(result.startsWith("\u200B") ? result : `\u200B${result}`);
       } else {
         throw new Error("Empty response from server");
@@ -215,7 +213,7 @@ export default function App() {
 
             {/* Output */}
             {typedOutput ? (
-              <div className="relative">
+              <div className="relative overflow-x-auto">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-mono font-medium text-gray-500 dark:text-gray-300">
                     {language}
@@ -230,15 +228,14 @@ export default function App() {
                 <SyntaxHighlighter
                   language={language.toLowerCase()}
                   style={oneDark}
+                  showLineNumbers={false}
+                  wrapLongLines={true}
                   customStyle={{
                     borderRadius: "0.5rem",
                     padding: "1.25rem",
                     fontSize: "0.85rem",
                     background: darkMode ? "#1E1E2E" : "#282C34",
                   }}
-                  showLineNumbers
-                  wrapLines
-                  wrapLongLines
                 >
                   {typedOutput}
                 </SyntaxHighlighter>
