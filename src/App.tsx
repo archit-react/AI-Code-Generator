@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateCode } from "./api/generateCode";
 import { Toaster, toast } from "react-hot-toast";
 import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -6,39 +6,61 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTypewriter } from "./hooks/useTypewriter";
 import { useTranslation } from "react-i18next";
 
-// Supported programming languages for the dropdown
-const languages = ["JavaScript", "Python", "C++", "TypeScript"];
+const languages = [
+  { name: "JavaScript", icon: "JS" },
+  { name: "Python", icon: "Py" },
+  { name: "C++", icon: "C++" },
+  { name: "TypeScript", icon: "TS" },
+  { name: "Go", icon: "Go" },
+  { name: "Rust", icon: "Rs" },
+];
 
 export default function App() {
-  // State variables
-  const [language, setLanguage] = useState(languages[0]); // selected language
-  const [prompt, setPrompt] = useState(""); // input prompt text
-  const [output, setOutput] = useState(""); // final generated output
-  const [isLoading, setIsLoading] = useState(false); // button loading state
-  const [darkMode, setDarkMode] = useState(false); // theme toggle state
+  const [language, setLanguage] = useState(languages[0].name);
+  const [prompt, setPrompt] = useState("");
+  const [output, setOutput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    () =>
+      localStorage.getItem("theme") === "dark" ||
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 
-  // Custom hook for typewriter animation
-  const typedOutput = useTypewriter(output);
+  // Fix: Always prepend zero-width space to output
+  const typedOutput = useTypewriter(
+    output ? (output.startsWith("\u200B") ? output : `\u200B${output}`) : ""
+  );
 
-  // For internationalization (i18n)
   const { t, i18n } = useTranslation();
 
-  // Handle code generation when "Generate Code" button is clicked
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
+
   const handleGenerateCode = async () => {
+    if (!prompt.trim()) {
+      toast.error(t("promptRequired"));
+      return;
+    }
+
     setIsLoading(true);
     setOutput("  Generating...");
 
     try {
       const result = await generateCode(language, prompt);
-
-      // Ensuring result is a valid non-empty string
       if (typeof result === "string" && result.trim() !== "") {
-        setOutput(result);
+        // Prepend zero-width space to protect first character
+        setOutput(result.startsWith("\u200B") ? result : `\u200B${result}`);
       } else {
-        setOutput("// Failed to generate code.");
+        throw new Error("Empty response from server");
       }
     } catch (err) {
-      // Handle API errors
       const error = err as {
         response?: { data?: { error?: { message?: string } } };
         message?: string;
@@ -47,139 +69,185 @@ export default function App() {
       const errorMessage =
         error.response?.data?.error?.message ||
         error.message ||
-        "Something went wrong.";
+        t("defaultError");
 
-      toast.error(`Error: ${errorMessage}`);
+      toast.error(`${t("error")}: ${errorMessage}`);
       setOutput(`// ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Copy output code to clipboard
   const handleCopy = () => {
     if (!output) return;
     navigator.clipboard.writeText(output);
     toast.success(t("copied"));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      handleGenerateCode();
+    }
+  };
+
   return (
-    // Wrapper for full page (inherits background from index.css)
-    <div className="bg-inherit">
-      {/* Toast notifications */}
-      <Toaster position="top-right" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          className:
+            "!bg-white/80 !backdrop-blur-sm dark:!bg-gray-800/80 dark:!text-white",
+        }}
+      />
 
-      {/* Top-right: language selector and theme toggle button */}
-      <div className="flex justify-end gap-3 mt-2 mb-4 pr-2">
-        {/* Language dropdown */}
-        <select
-          value={i18n.language}
-          onChange={(e) => i18n.changeLanguage(e.target.value)}
-          className="p-2 border rounded shadow-md bg-white text-black dark:bg-gray-900 dark:text-white dark:border-gray-700"
-        >
-          <option value="en">English</option>
-          <option value="es">Español</option>
-        </select>
-
-        {/* Theme toggle button */}
-        <button
-          onClick={() => {
-            setDarkMode(!darkMode);
-            localStorage.setItem("theme", !darkMode ? "dark" : "light");
-            document.body.classList.toggle("dark");
-          }}
-          className="p-2 border rounded shadow-md bg-white text-black dark:bg-gray-900 dark:text-white dark:border-gray-700"
-        >
-          {darkMode ? "☀️ Light" : "🌙 Dark"}
-        </button>
-      </div>
-
-      {/* Main content container */}
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-6">
-        <div className="w-full max-w-xl bg-white dark:bg-gray-900 text-black dark:text-white p-8 rounded-2xl shadow-xl transition-all">
-          {/* Title */}
-          <h1 className="text-3xl font-bold text-center mb-8 tracking-tight text-black dark:text-white">
-            {t("title")}
-          </h1>
-
-          {/* Language select box for code generation */}
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="w-full mb-4 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          >
-            {languages.map((lang) => (
-              <option
-                key={lang}
-                className="text-black dark:text-white bg-white dark:bg-gray-800"
+      <div className="container mx-auto px-4 py-8">
+        <div className="relative max-w-4xl mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+          {/* Header */}
+          <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
+            <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+              {t("title")}
+            </h1>
+            <div className="flex items-center space-x-4">
+              <select
+                value={i18n.language}
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                className="text-sm bg-transparent border-none focus:ring-1 focus:ring-blue-500 rounded text-gray-800 dark:text-gray-200"
               >
-                {lang}
-              </option>
-            ))}
-          </select>
+                <option value="en">EN</option>
+                <option value="es">ES</option>
+                <option value="fr">FR</option>
+                <option value="de">DE</option>
+              </select>
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                {darkMode ? (
+                  <svg
+                    className="h-5 w-5 text-gray-300"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5 text-gray-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
 
-          {/* Prompt input box */}
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder={t("placeholder")}
-            rows={6}
-            className="w-full p-3 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black dark:bg-gray-800 dark:text-white"
-          />
+          {/* Content */}
+          <div className="p-6 space-y-6">
+            <div className="flex flex-col">
+              <label
+                htmlFor="language-select"
+                className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1"
+              >
+                {t("language")}
+              </label>
+              <select
+                id="language-select"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="bg-white/50 dark:bg-gray-700/50 border border-gray-300/50 dark:border-gray-600/50 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-gray-800 dark:text-gray-200"
+              >
+                {languages.map((lang) => (
+                  <option
+                    key={lang.name}
+                    value={lang.name}
+                    className="bg-white dark:bg-gray-800"
+                  >
+                    {lang.icon} • {lang.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Generate code button */}
-          <button
-            onClick={handleGenerateCode}
-            className={`w-full bg-blue-600 text-white py-2 rounded transition ${
-              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
-            }`}
-            disabled={isLoading}
-          >
-            {isLoading ? t("generating") : t("generate")}
-          </button>
+            <div className="flex flex-col">
+              <label
+                htmlFor="prompt-input"
+                className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1"
+              >
+                {t("description")}
+              </label>
+              <textarea
+                id="prompt-input"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t("placeholder")}
+                rows={5}
+                className="bg-white/50 dark:bg-gray-700/50 border border-gray-300/50 dark:border-gray-600/50 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition text-gray-800 dark:text-gray-200"
+              />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {t("pressCmdEnter")}
+              </p>
+            </div>
 
-          {/* Language tag badge (i.e., JavaScript) */}
-          {typedOutput &&
-            typedOutput.trim() !== "" &&
-            !typedOutput.startsWith("//") && (
-              <div className="mt-6 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                {language}
+            <button
+              onClick={handleGenerateCode}
+              disabled={isLoading || !prompt.trim()}
+              className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
+                isLoading || !prompt.trim()
+                  ? "bg-blue-400/50 dark:bg-blue-600/50 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 shadow-sm"
+              } text-white`}
+            >
+              {isLoading ? t("generating") : t("generate")}
+            </button>
+
+            {/* Output */}
+            {typedOutput ? (
+              <div className="relative">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-mono font-medium text-gray-500 dark:text-gray-300">
+                    {language}
+                  </span>
+                  <button
+                    onClick={handleCopy}
+                    className="text-xs flex items-center gap-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2.5 py-1.5 rounded transition-colors text-gray-700 dark:text-gray-300"
+                  >
+                    {t("copy")}
+                  </button>
+                </div>
+                <SyntaxHighlighter
+                  language={language.toLowerCase()}
+                  style={oneDark}
+                  customStyle={{
+                    borderRadius: "0.5rem",
+                    padding: "1.25rem",
+                    fontSize: "0.85rem",
+                    background: darkMode ? "#1E1E2E" : "#282C34",
+                  }}
+                  showLineNumbers
+                  wrapLines
+                  wrapLongLines
+                >
+                  {typedOutput}
+                </SyntaxHighlighter>
+              </div>
+            ) : (
+              <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-8 text-center border border-dashed border-gray-300 dark:border-gray-600">
+                <h3 className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t("noCodeGenerated")}
+                </h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {t("enterPrompt")}
+                </p>
               </div>
             )}
-
-          {/* Syntax highlighted code output */}
-          {typedOutput &&
-          typedOutput.trim() !== "" &&
-          !typedOutput.toLowerCase().includes("undefined") ? (
-            <SyntaxHighlighter
-              language={language.toLowerCase()}
-              style={oneDark}
-              customStyle={{
-                borderRadius: "0.5rem",
-                padding: "1rem",
-                fontSize: "0.9rem",
-                marginTop: "1rem",
-              }}
-            >
-              {typedOutput}
-            </SyntaxHighlighter>
-          ) : (
-            // Placeholder text before code is generated
-            <div className="mt-4 text-sm text-gray-400 dark:text-gray-500 italic">
-              {t(" Your generated code will appear here.") ||
-                "Your generated code will appear here."}
-            </div>
-          )}
-
-          {/* Copy code button */}
-          {output && (
-            <button
-              onClick={handleCopy}
-              className="mt-2 bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
-            >
-              Copy Code
-            </button>
-          )}
+          </div>
         </div>
       </div>
     </div>
