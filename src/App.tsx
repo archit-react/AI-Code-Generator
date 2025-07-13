@@ -125,14 +125,20 @@ export default function App() {
                 {darkMode ? (
                   <svg
                     className="h-5 w-5 text-gray-300"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    viewBox="0 0 24 24"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1z"
-                      clipRule="evenodd"
-                    />
+                    <circle cx="12" cy="12" r="4" fill="currentColor" />
+                    <line x1="12" y1="2" x2="12" y2="4" />
+                    <line x1="12" y1="20" x2="12" y2="22" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="2" y1="12" x2="4" y2="12" />
+                    <line x1="20" y1="12" x2="22" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                   </svg>
                 ) : (
                   <svg
@@ -242,9 +248,6 @@ export default function App() {
                 <h3 className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t("noCodeGenerated")}
                 </h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {t("enterPrompt")}
-                </p>
               </div>
             )}
           </div>
