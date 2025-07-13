@@ -1,13 +1,12 @@
 # AI Code Generator (Unit Tested)
 
-A responsive, multilingual AI-powered code generation app built with **React**, **TypeScript**, and **Vite**. Users can describe what they want to build, select a language, and generate working code using an AI API (Google Gemini via OpenRouter). It features **dark/light mode**, **typewriter animation**, **language selector**, and **syntax highlighting** with a clean, developer-friendly UI.
+A responsive, production-grade AI-powered code generation app built with React, TypeScript, and Vite. It allows users to describe a coding task, select a language, and generate valid code using the Google Gemini Pro API (via OpenRouter). It includes features such as dark/light mode, multilingual support, animated code output, and syntax highlighting – all designed with a developer-first UX and minimalistic UI.
 
-📍 **Live Demo**  
-[View Live App](https://ai-code-generator-lyart.vercel.app/)
+[Live App](https://ai-code-generator-lyart.vercel.app/)
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - React
 - TypeScript
@@ -18,25 +17,27 @@ A responsive, multilingual AI-powered code generation app built with **React**, 
 - React Hot Toast
 - react-i18next (i18n)
 - Prism + React Syntax Highlighter
+- Vitest + React Testing Library
 - Custom Typewriter Hook
 
 ---
 
-## 🚀 Features
+## Features
 
-- AI Code Generation (via Gemini Pro API)
-- Multi-language support (English, Español)
-- Theme toggle: Dark Mode / Light Mode
-- Typewriter effect for output animation
-- Language dropdown (JavaScript, Python, C++, TypeScript)
-- Syntax highlighting with Prism (One Dark theme)
-- Responsive layout with Tailwind CSS
+- AI Code Generation via Google Gemini Pro (OpenRouter)
+- Animated typewriter-style output rendering
+- Internationalization support (English, Spanish)
+- Language dropdown with support for JavaScript, Python, TypeScript, C++, Go, and Rust
+- Dark/Light mode toggle with persistent theme via localStorage
+- Syntax highlighting using Prism One Dark theme
 - Copy-to-clipboard functionality
-- Toast notifications for feedback
+- Error handling with toast feedback
+- Responsive layout with Tailwind CSS
+- Unit tested UI components and hooks
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone the repository
@@ -54,63 +55,42 @@ npm run dev
 
 ---
 
-### ✅ Things Done Differently:
+## Implementation Details
 
-- Used **Google Gemini API** via **OpenRouter** instead of OpenAI (to avoid API costs).
-- Implemented **Typewriter effect** with a custom React hook (`useTypewriter`).
-- Built **Dark Mode** using `localStorage` + Tailwind `dark` class with full layout adaptation.
-- Integrated **react-i18next** for internationalization (English, Spanish).
-- Applied **Prism OneDark** theme using `react-syntax-highlighter` for clean code blocks.
-- Used Tailwind CSS throughout instead of custom CSS.
-- **(NEW)** Fixed typewriter bug where the **first letter (like 'T' in "There’s")** was getting skipped by adding a **zero-width space** before the output.
+### Design and Architecture
 
----
+- Gemini Pro API is integrated through OpenRouter with Axios
+- Typewriter effect implemented using a custom `useTypewriter` hook with controlled rendering
+- Dark mode respects system preferences and persists via localStorage
+- i18n implemented via `react-i18next`, with dropdown for runtime language switching
+- PrismJS + `react-syntax-highlighter` used for line-wrapped syntax blocks
+- Tailwind’s utility classes used across the entire layout – no external CSS
+- Output is always visible without horizontal scrolling by enabling line wrapping
 
-### 🛠️ Mistakes Faced:
+### Optimizations and Fixes
 
-- ❌ Dark mode was applied but **top white border** stayed in `<body>` due to incorrect root background.
-- ❌ `className="dark"` wasn’t taking full effect because `html, body` background wasn’t set globally.
-- ❌ Used `className="bg-white"` directly without inheritance, overriding global dark styles.
-- ❌ **(NEW)** Typewriter bug: **First letter was being skipped** in animated output ("There’s" showing as "Here’s").
-
----
-
-### 🧪 Fixes:
-
-- ✅ Added `document.body.classList.toggle('dark')` and `localStorage.getItem("theme")` on initial load inside `main.tsx`.
-- ✅ Applied `background-color: inherit` on `#root` and `body` to fix **white flash bug**.
-- ✅ Used Tailwind’s `dark:bg-...` + `bg-inherit` correctly to control layout-level backgrounds.
-- ✅ Set `color-scheme: dark` for full system dark mode support.
-- ✅ **(NEW)** Prepended **zero-width space (`\u200B`)** to `output` for typewriter animation to prevent the **first letter bug** from eating initial characters like `T`.
+- Dark mode flashes were resolved using `background-color: inherit` and `color-scheme` meta tag
+- The typewriter bug where the first letter was skipped was resolved by prepending a zero-width space (`\u200B`)
+- All runtime prompts and output logic is encapsulated in `App.tsx` for clarity and isolation
 
 ---
 
-## 🖌️ Customization Highlights
+## Testing
 
-- Font: System UI
-- Background: Dark Gray (`#111827`) with gradient for contrast
-- Buttons: Tailwind blue with transitions
-- Text Color: White & Muted Gray in dark mode
-- Clean component structure with **App.tsx**, `api/generateCode.ts`, `hooks/useTypewriter.ts`
-- Smart UX with **toast errors**, **loading state**, **language tag** rendering, and more
+Unit tests have been written using Vitest and React Testing Library.
 
----
+### Covered:
 
-## ✅ Unit Testing
-
-This project includes unit tests written using **Vitest** (https://vitest.dev/) and **React Testing Library** (https://testing-library.com/) for testing.
-
-### 🔍 Tested Features
-
-- 🌗 Dark mode toggle
-- 🌐 Language dropdown (i18n)
-- 📋 Copy to clipboard functionality
-- 🧪 Mocked `generateCode()` API
-- 💡 Custom hooks and rendering logic
+- Theme toggle (dark/light mode)
+- Language dropdown rendering and selection
+- Clipboard copy behavior
+- Mocked generateCode API responses
+- Edge case handling (empty prompt, API error)
+- Hook behavior validation (typewriter output)
 
 ---
 
-## 📂 Folder Structure
+## Folder Structure
 
 ```
 /src
@@ -119,16 +99,28 @@ This project includes unit tests written using **Vitest** (https://vitest.dev/) 
   /hooks
     useTypewriter.ts
   App.tsx
+  App.test.tsx
   main.tsx
   index.css
-  App.test.tsx
 ```
 
 ---
 
-## ✍️ Author
+## Notes
 
-**Archit Sharma**  
-Frontend Developer · React · JavaScript · TypeScript
+- API keys are managed using environment variables. Ensure `VITE_GEMINI_API_KEY` is set in `.env`.
+- Typewriter behavior has been adjusted for more consistent output across multiline content.
+- Build is optimized for deployment via Vercel and currently live at the link above.
+- All changes are committed to GitHub and redeployed via the Vercel dashboard.
 
-[GitHub](https://github.com/archit-react) • [LinkedIn](https://www.linkedin.com/in/archit-react) • [Portfolio](https://your-portfolio.com)
+---
+
+## Author
+
+**Archit Sharma**\
+Frontend Developer | React | TypeScript | Tailwind CSS
+
+- [GitHub](https://github.com/archit-react)
+- [LinkedIn](https://www.linkedin.com/in/archit-react)
+- [Portfolio](https://your-portfolio.com)
+
