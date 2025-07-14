@@ -158,7 +158,7 @@ export default function App() {
                 htmlFor="language-select"
                 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1"
               >
-                {t("language")}
+                {t("Language")}
               </label>
               <select
                 id="language-select"
@@ -183,7 +183,7 @@ export default function App() {
                 htmlFor="prompt-input"
                 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1"
               >
-                {t("description")}
+                {t("Description")}
               </label>
               <textarea
                 id="prompt-input"
@@ -195,7 +195,7 @@ export default function App() {
                 className="bg-white/50 dark:bg-gray-700/50 border border-gray-300/50 dark:border-gray-600/50 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition text-gray-800 dark:text-gray-200"
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                {t("pressCmdEnter")}
+                {t("pressCmd+Enter")}
               </p>
             </div>
 
