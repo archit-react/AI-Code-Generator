@@ -2,7 +2,7 @@
 
 A responsive, production-grade AI-powered code generation app built with React, TypeScript, and Vite. It allows users to describe a coding task, select a language, and generate valid code using the Google Gemini Pro API (via OpenRouter). It includes features such as dark/light mode, multilingual support, animated code output, and syntax highlighting – all designed with a developer-first UX and minimalistic UI.
 
-[Live App](https://ai-code-generator-lyart.vercel.app/)
+[Live App](https://ai-code-generator-navy.vercel.app/)
 
 ---
 
